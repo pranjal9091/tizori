@@ -1,0 +1,109 @@
+/* ==========================================================================
+   PocketPaisa (गुल्लक) Design Tokens
+   Warm Paper Ledger Theme System (Light-First & Warm Charcoal Dark)
+   ========================================================================== */
+
+:root {
+  /* LIGHT PALETTE (Default - Warm Chai Paper Ledger) */
+  --bg: #F6F1E7;
+  --surface: #FFFBF3;
+  --surface-2: #EFE7D6;
+  --ink: #1E2A24;
+  --ink-muted: #5E6B63;
+  --line: #E0D6C2;
+  --line-subtle: rgba(30, 42, 36, 0.07);
+
+  --primary: #2F5D50;         /* Paisa Green */
+  --primary-hover: #264b41;
+  --primary-soft: #D5E3D6;
+  --primary-contrast: #FFFFFF;
+
+  --accent: #D98324;          /* Warm Saffron */
+  --accent-hover: #c0731d;
+  --accent-soft: #F6E1C3;
+  --accent-contrast: #FFFFFF;
+
+  --danger: #C4513B;          /* Terracotta Clay */
+  --danger-soft: #F3D5CC;
+  --danger-contrast: #FFFFFF;
+
+  --success: #3E7D5A;
+  --success-soft: #D7EDE1;
+
+  /* 50-30-20 Category Colors */
+  --cat-needs: #2F5D50;
+  --cat-needs-soft: #D5E3D6;
+  --cat-wants: #D98324;
+  --cat-wants-soft: #F6E1C3;
+  --cat-bachat: #3D6B7D;      /* Deep Teal Blue */
+  --cat-bachat-soft: #D8E7ED;
+  --cat-savings: #3D6B7D;
+  --cat-savings-soft: #D8E7ED;
+
+  /* Shadows (Ink-based soft warm elevations) */
+  --shadow-1: 0 1px 3px rgba(30, 42, 36, 0.06), 0 1px 2px rgba(30, 42, 36, 0.04);
+  --shadow-2: 0 4px 12px rgba(30, 42, 36, 0.08), 0 2px 4px rgba(30, 42, 36, 0.04);
+  --shadow-3: 0 10px 28px rgba(30, 42, 36, 0.12), 0 4px 8px rgba(30, 42, 36, 0.06);
+  --shadow-inset: inset 0 2px 4px rgba(30, 42, 36, 0.07);
+  --shadow-stamp: 2px 3px 0 rgba(30, 42, 36, 0.15);
+
+  /* Typography */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Bricolage Grotesque', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-devanagari: 'Hind', sans-serif;
+
+  /* Spacing & Radii */
+  --radius-card: 14px;
+  --radius-pill: 999px;
+  --radius-input: 8px;
+  --radius-sm: 6px;
+
+  /* Noise grain opacity */
+  --paper-grain-opacity: 0.035;
+}
+
+/* WARM DARK PALETTE (Warm Charcoal, NOT blue-black) */
+[data-theme="dark"] {
+  --bg: #17140F;
+  --surface: #1F1B15;
+  --surface-2: #28231B;
+  --ink: #EFE8DA;
+  --ink-muted: #A39A89;
+  --line: #35302A;
+  --line-subtle: rgba(239, 232, 218, 0.08);
+
+  --primary: #7FB5A0;
+  --primary-hover: #90c2ae;
+  --primary-soft: #2A3A32;
+  --primary-contrast: #101F18;
+
+  --accent: #E8A04A;
+  --accent-hover: #f0ae5f;
+  --accent-soft: #3A2C18;
+  --accent-contrast: #201507;
+
+  --danger: #E0836F;
+  --danger-soft: #3C2520;
+  --danger-contrast: #200E0A;
+
+  --success: #6DB58C;
+  --success-soft: #233A2E;
+
+  --cat-needs: #7FB5A0;
+  --cat-needs-soft: #2A3A32;
+  --cat-wants: #E8A04A;
+  --cat-wants-soft: #3A2C18;
+  --cat-bachat: #6AA2B8;
+  --cat-bachat-soft: #1E2D33;
+  --cat-savings: #6AA2B8;
+  --cat-savings-soft: #1E2D33;
+
+  --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.25);
+  --shadow-2: 0 4px 14px rgba(0, 0, 0, 0.35);
+  --shadow-3: 0 10px 30px rgba(0, 0, 0, 0.5);
+  --shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-stamp: 2px 3px 0 rgba(0, 0, 0, 0.4);
+
+  --paper-grain-opacity: 0.025;
+}

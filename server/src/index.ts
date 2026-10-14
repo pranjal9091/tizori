@@ -1,0 +1,91 @@
+import express from 'express';
+import cors from 'cors';
+import { ENV } from './config/env';
+import { connectDB } from './config/db';
+import { errorHandler } from './middleware/errorHandler';
+import { runSeed } from './scripts/seed';
+import { User } from './models/User';
+
+// Import route modules
+import authRoutes from './routes/auth.routes';
+import transactionRoutes from './routes/transaction.routes';
+import gullakRoutes from './routes/gullak.routes';
+import affordabilityRoutes from './routes/affordability.routes';
+import dashboardRoutes from './routes/dashboard.routes';
+import paymentRoutes from './routes/payment.routes';
+import databaseRoutes from './routes/database.routes';
+import recurringRoutes from './routes/recurring.routes';
+
+const app = express();
+
+// Enable CORS
+app.use(
+  cors({
+    origin: [
+      ENV.CLIENT_URL,
+      'http://localhost:3000',
+      'http://127.0.0.1:3000',
+      'http://localhost:5173',
+      'http://127.0.0.1:5173',
+      'http://localhost:5174',
+    ],
+    credentials: true,
+  })
+);
+
+app.use((req, res, next) => {
+  if (req.originalUrl === '/api/payments/webhook') {
+    next();
+  } else {
+    express.json({ limit: '10mb' })(req, res, next);
+  }
+});
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Health Check Endpoint
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    service: 'PocketPaisa (गुल्लक) API Server',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Mount Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/transactions', transactionRoutes);
+app.use('/api/gullaks', gullakRoutes);
+app.use('/api/affordability', affordabilityRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/database', databaseRoutes);
+app.use('/api/recurring', recurringRoutes);
+
+// Central Error Handler
+app.use(errorHandler);
+
+// Start Server & Auto-Bootstrap Seed
+async function startServer() {
+  try {
+    await connectDB();
+
+    const userCount = await User.countDocuments();
+    if (userCount === 0) {
+      console.log('⚡ Empty database detected. Auto-seeding rich PocketPaisa demo state...');
+      await runSeed();
+    }
+
+    app.listen(ENV.PORT, () => {
+      console.log(`\n======================================================`);
+      console.log(`🐷 PocketPaisa API Server running at http://localhost:${ENV.PORT}`);
+      console.log(`📡 Health Check: http://localhost:${ENV.PORT}/api/health`);
+      console.log(`🔑 Demo User: demo@pocketpaisa.app | Password: Password123!`);
+      console.log(`======================================================\n`);
+    });
+  } catch (err) {
+    console.error('Fatal Server Boot Error:', err);
+    process.exit(1);
+  }
+}
+
+startServer();

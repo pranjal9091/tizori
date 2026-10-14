@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <title>PocketPaisa — Personal Financial Habit Coach</title>
+    <meta name="description" content="Disciplined, modern personal finance companion for students and young professionals. 1-tap daily expense logging, real-time affordability checks, and goal-based savings vaults." />
+    <meta name="theme-color" content="#F6F1E7" id="theme-color-meta" />
+    
+    <!-- Preconnect to Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Anti-Flash Theme Script (Default Light Mode) -->
+    <script>
+      (function() {
+        try {
+          var stored = localStorage.getItem('pocketpaisa_theme');
+          var theme = (stored === 'dark') ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', theme);
+          var meta = document.getElementById('theme-color-meta');
+          if (meta) {
+            meta.setAttribute('content', theme === 'dark' ? '#17140F' : '#F6F1E7');
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <!-- Google Identity Services (Real Google Sign-In & One Tap) -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <!-- Razorpay Payment Gateway Checkout Script (Real UPI, Cards, NetBanking) -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  </head>
+  <body>
+    <!-- Hidden SVG Filters for Paper Rough Edge & Stamps -->
+    <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" aria-hidden="true" focusable="false">
+      <defs>
+        <!-- Rough Stamp Border Filter -->
+        <filter id="rough-stamp" x="-10%" y="-10%" width="120%" height="120%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" result="noise" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="3.5" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+        <!-- Subtle Paper Edge Displacement -->
+        <filter id="paper-edge">
+          <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" result="noise" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </defs>
+    </svg>
+
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
