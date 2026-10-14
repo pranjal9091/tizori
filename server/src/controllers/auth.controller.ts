@@ -2,10 +2,13 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
+import { OAuth2Client } from 'google-auth-library';
 import { User } from '../models/User';
 import { ENV } from '../config/env';
 import { AuthRequest } from '../middleware/auth';
 import { sendLoginAlert } from '../services/email.service';
+
+const googleClient = new OAuth2Client(ENV.GOOGLE_CLIENT_ID);
 
 export const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -209,28 +212,49 @@ export async function googleAuth(req: Request, res: Response): Promise<void> {
   }
 
   try {
-    // Official Google token verification via Google's OAuth2 tokeninfo endpoint
-    // This cryptographically verifies the token signed by Google
-    const tokenInfoUrl = `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`;
-    const response = await fetch(tokenInfoUrl);
+    let payload: { sub: string; email?: string; name?: string; picture?: string } | null = null;
 
-    if (!response.ok) {
-      const errData = (await response.json().catch(() => ({}))) as { error_description?: string };
-      res.status(401).json({
-        success: false,
-        message: errData.error_description || 'Invalid or expired Google credential token.',
-      });
-      return;
+    if (ENV.GOOGLE_CLIENT_ID) {
+      try {
+        const ticket = await googleClient.verifyIdToken({
+          idToken: credential,
+          audience: ENV.GOOGLE_CLIENT_ID,
+        });
+        const ticketPayload = ticket.getPayload();
+        if (ticketPayload) {
+          payload = {
+            sub: ticketPayload.sub,
+            email: ticketPayload.email,
+            name: ticketPayload.name,
+            picture: ticketPayload.picture,
+          };
+        }
+      } catch (clientErr) {
+        console.warn('OAuth2Client verification note, trying tokeninfo:', (clientErr as Error).message);
+      }
     }
 
-    const payload = (await response.json()) as {
-      sub: string;
-      email: string;
-      email_verified?: string | boolean;
-      name?: string;
-      picture?: string;
-      aud?: string;
-    };
+    if (!payload) {
+      // Official Google token verification via Google's OAuth2 tokeninfo endpoint
+      const tokenInfoUrl = `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`;
+      const response = await fetch(tokenInfoUrl);
+
+      if (!response.ok) {
+        const errData = (await response.json().catch(() => ({}))) as { error_description?: string };
+        res.status(401).json({
+          success: false,
+          message: errData.error_description || 'Invalid or expired Google credential token.',
+        });
+        return;
+      }
+
+      payload = (await response.json()) as {
+        sub: string;
+        email: string;
+        name?: string;
+        picture?: string;
+      };
+    }
 
     if (!payload.email) {
       res.status(400).json({ success: false, message: 'Google account does not have a verified email address.' });

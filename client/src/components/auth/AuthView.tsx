@@ -633,7 +633,29 @@ export const AuthView: React.FC = () => {
                     marginBottom: '1.25rem',
                   }}
                 >
-                  {error}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <span>{error}</span>
+                    {error.toLowerCase().includes('already exists') && isRegister && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsRegister(false);
+                          setError('');
+                        }}
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          color: 'var(--primary)',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          textDecoration: 'underline',
+                          fontSize: '0.75rem',
+                        }}
+                      >
+                        Sign In with this email →
+                      </button>
+                    )}
+                  </div>
                 </div>
               )}
 
