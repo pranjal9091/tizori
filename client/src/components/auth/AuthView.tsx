@@ -9,7 +9,6 @@ import {
   Sparkles,
   CheckCircle2,
   AlertCircle,
-  Settings2,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { ThemeToggle } from '../../design-system/ThemeToggle';
@@ -72,8 +71,6 @@ export const AuthView: React.FC = () => {
       ''
     );
   });
-  const [showClientIdConfig, setShowClientIdConfig] = useState(false);
-  const [customClientIdInput, setCustomClientIdInput] = useState(googleClientId);
   const googleBtnRef = useRef<HTMLDivElement>(null);
 
   // Rotating inspiring financial habit quotes in standard English
@@ -97,9 +94,8 @@ export const AuthView: React.FC = () => {
     authApi
       .getConfig()
       .then(res => {
-        if (res.data?.googleClientId && !localStorage.getItem('pocketpaisa_google_client_id')) {
+        if (res.data?.googleClientId) {
           setGoogleClientId(res.data.googleClientId);
-          setCustomClientIdInput(res.data.googleClientId);
         }
       })
       .catch(() => {});
@@ -168,20 +164,12 @@ export const AuthView: React.FC = () => {
 
   const handleManualGoogleClick = () => {
     if (!googleClientId) {
-      setShowClientIdConfig(true);
+      setError('Google Sign-In service is currently waiting for Google Client ID configuration. You can sign in directly with Email & Password or Demo Account.');
       return;
     }
     if (window.google?.accounts?.id) {
       window.google.accounts.id.prompt();
     }
-  };
-
-  const handleSaveGoogleClientId = (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmed = customClientIdInput.trim();
-    setGoogleClientId(trimmed);
-    localStorage.setItem('pocketpaisa_google_client_id', trimmed);
-    setShowClientIdConfig(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -542,65 +530,7 @@ export const AuthView: React.FC = () => {
                   </button>
                 )}
 
-                {/* Google Client ID Configuration Drawer */}
-                <div style={{ marginTop: '0.45rem', textAlign: 'center' }}>
-                  <button
-                    type="button"
-                    onClick={() => setShowClientIdConfig(!showClientIdConfig)}
-                    style={{
-                      background: 'transparent',
-                      border: 'none',
-                      color: 'var(--ink-muted)',
-                      fontSize: '0.725rem',
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.3rem',
-                    }}
-                  >
-                    <Settings2 size={12} />
-                    <span>
-                      {googleClientId ? 'Google OAuth Client ID active' : 'Configure Google Client ID'}
-                    </span>
-                  </button>
-                </div>
 
-                {showClientIdConfig && (
-                  <form
-                    onSubmit={handleSaveGoogleClientId}
-                    style={{
-                      marginTop: '0.65rem',
-                      padding: '0.75rem',
-                      backgroundColor: 'var(--surface-2)',
-                      borderRadius: 'var(--radius-input)',
-                      border: '1px solid var(--line)',
-                    }}
-                  >
-                    <label style={{ fontSize: '0.725rem', fontWeight: 600, color: 'var(--ink)', display: 'block', marginBottom: '0.3rem' }}>
-                      Google OAuth Web Client ID
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. 123456789-xyz.apps.googleusercontent.com"
-                      value={customClientIdInput}
-                      onChange={e => setCustomClientIdInput(e.target.value)}
-                      className="form-input"
-                      style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', marginBottom: '0.45rem' }}
-                    />
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.6875rem', color: 'var(--ink-muted)' }}>
-                        From Google Cloud Console
-                      </span>
-                      <button
-                        type="submit"
-                        className="btn btn-primary"
-                        style={{ fontSize: '0.725rem', padding: '0.25rem 0.65rem' }}
-                      >
-                        Save Client ID
-                      </button>
-                    </div>
-                  </form>
-                )}
 
                 {/* Or Divider */}
                 <div
