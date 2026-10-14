@@ -66,9 +66,8 @@ export const AuthView: React.FC = () => {
   // Google OAuth Config State
   const [googleClientId, setGoogleClientId] = useState<string>(() => {
     return (
-      localStorage.getItem('pocketpaisa_google_client_id') ||
       import.meta.env.VITE_GOOGLE_CLIENT_ID ||
-      ''
+      '465354863440-31btd6i1fvr45uvug7skt1ucqv1h9okd.apps.googleusercontent.com'
     );
   });
   const googleBtnRef = useRef<HTMLDivElement>(null);
