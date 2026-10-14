@@ -13,6 +13,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { ThemeToggle } from '../../design-system/ThemeToggle';
 import { authApi } from '../../api/endpoints';
+import { LegalModal } from '../legal/LegalModal';
 
 // Declare Google Identity Services global type
 declare global {
@@ -71,8 +72,15 @@ export const AuthView: React.FC = () => {
     );
   });
   const googleBtnRef = useRef<HTMLDivElement>(null);
+  const [legalModal, setLegalModal] = useState<'privacy' | 'terms' | null>(null);
 
-  // Rotating inspiring financial habit quotes in standard English
+  useEffect(() => {
+    if (window.location.pathname === '/privacy' || window.location.hash === '#privacy') {
+      setLegalModal('privacy');
+    } else if (window.location.pathname === '/terms' || window.location.hash === '#terms') {
+      setLegalModal('terms');
+    }
+  }, []);
   const quotes = [
     'Small, disciplined daily habits compound into meaningful financial freedom.',
     'Know your daily safe allowance so the final week of the month is completely stress-free.',
@@ -752,10 +760,36 @@ export const AuthView: React.FC = () => {
                   {loading ? 'Authenticating...' : isRegister ? 'Create Account' : 'Sign In'}
                 </button>
               </form>
+
+              {/* Legal Footer Links for Google OAuth Compliance */}
+              <div style={{ marginTop: '1.25rem', textAlign: 'center', fontSize: '0.725rem', color: 'var(--ink-muted)', lineHeight: 1.5 }}>
+                By continuing, you agree to our{' '}
+                <button
+                  type="button"
+                  onClick={() => setLegalModal('terms')}
+                  style={{ background: 'transparent', border: 'none', color: 'var(--primary)', textDecoration: 'underline', cursor: 'pointer', fontSize: 'inherit', padding: 0 }}
+                >
+                  Terms of Service
+                </button>{' '}
+                and{' '}
+                <button
+                  type="button"
+                  onClick={() => setLegalModal('privacy')}
+                  style={{ background: 'transparent', border: 'none', color: 'var(--primary)', textDecoration: 'underline', cursor: 'pointer', fontSize: 'inherit', padding: 0 }}
+                >
+                  Privacy Policy
+                </button>.
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      <LegalModal
+        isOpen={Boolean(legalModal)}
+        onClose={() => setLegalModal(null)}
+        type={legalModal || 'privacy'}
+      />
     </div>
   );
 };
