@@ -10,9 +10,16 @@ import { sendLoginAlert } from '../services/email.service';
 
 const googleClient = new OAuth2Client(ENV.GOOGLE_CLIENT_ID);
 
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 export const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Valid email is required'),
+  email: z
+    .string()
+    .email('Valid email is required')
+    .refine((val) => EMAIL_REGEX.test(val) && val.split('@')[0].length >= 2, {
+      message: 'Please enter a valid, legitimate email address (e.g. user@gmail.com)',
+    }),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string().min(6, 'Confirm password must be at least 6 characters').optional(),
   monthlyIncome: z.number().positive().default(35000),
@@ -30,12 +37,22 @@ function signToken(userId: string): string {
 export async function register(req: Request, res: Response): Promise<void> {
   const { name, email, password, confirmPassword, monthlyIncome } = req.body;
 
+  const cleanEmail = (email || '').trim().toLowerCase();
+  const localPart = cleanEmail.split('@')[0];
+  if (!cleanEmail || !EMAIL_REGEX.test(cleanEmail) || localPart.length < 2) {
+    res.status(400).json({
+      success: false,
+      message: 'Please enter a valid, legitimate email address (e.g. yourname@gmail.com).',
+    });
+    return;
+  }
+
   if (confirmPassword && password !== confirmPassword) {
     res.status(400).json({ success: false, message: 'Passwords do not match. Please verify your password.' });
     return;
   }
 
-  const existing = await User.findOne({ email: email.toLowerCase() });
+  const existing = await User.findOne({ email: cleanEmail });
   if (existing) {
     res.status(400).json({ success: false, message: 'An account with this email already exists.' });
     return;

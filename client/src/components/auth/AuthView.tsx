@@ -173,7 +173,13 @@ export const AuthView: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    const cleanEmail = email.trim().toLowerCase();
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const localPart = cleanEmail.split('@')[0];
+    if (!cleanEmail || !emailRegex.test(cleanEmail) || localPart.length < 2) {
+      setError('Please provide a legitimate, valid email address (e.g. yourname@gmail.com).');
+      return;
+    }
 
     if (isRegister) {
       if (password.length < 6) {
@@ -614,7 +620,7 @@ export const AuthView: React.FC = () => {
                       type="email"
                       className="form-input"
                       style={{ paddingLeft: '2.4rem' }}
-                      placeholder="aman@pocketpaisa.app"
+                      placeholder="aman.verma@gmail.com"
                       value={email}
                       onChange={e => setEmail(e.target.value)}
                       required
