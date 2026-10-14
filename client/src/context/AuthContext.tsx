@@ -7,7 +7,7 @@ interface AuthContextType {
   token: string | null;
   loading: boolean;
   login: (credentials: { email: string; password: string }) => Promise<void>;
-  googleLogin: (credential: string) => Promise<void>;
+  googleLogin: (credential: string, mode?: 'signin' | 'signup') => Promise<void>;
   register: (payload: { name: string; email: string; password: string; confirmPassword?: string; monthlyIncome?: number }) => Promise<void>;
   demoLogin: () => Promise<void>;
   logout: () => void;
@@ -54,8 +54,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const googleLogin = async (credential: string) => {
-    const res = await authApi.googleLogin(credential);
+  const googleLogin = async (credential: string, mode: 'signin' | 'signup' = 'signin') => {
+    const res = await authApi.googleLogin(credential, mode);
     if (res.token && res.user) {
       setToken(res.token);
       setUser(res.user);

@@ -116,7 +116,7 @@ export const AuthView: React.FC = () => {
       setGoogleLoading(true);
 
       try {
-        await googleLogin(response.credential);
+        await googleLogin(response.credential, isRegister ? 'signup' : 'signin');
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : 'Google authentication failed.';
         setError(msg);
@@ -124,7 +124,7 @@ export const AuthView: React.FC = () => {
         setGoogleLoading(false);
       }
     },
-    [googleLogin]
+    [googleLogin, isRegister]
   );
 
   // Initialize and Render Google Identity Button
@@ -596,6 +596,26 @@ export const AuthView: React.FC = () => {
                         }}
                       >
                         Sign In with this email →
+                      </button>
+                    )}
+                    {(error.toLowerCase().includes('no account found') || error.toLowerCase().includes('create account')) && !isRegister && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsRegister(true);
+                          setError('');
+                        }}
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          color: 'var(--primary)',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          textDecoration: 'underline',
+                          fontSize: '0.75rem',
+                        }}
+                      >
+                        Create an Account now →
                       </button>
                     )}
                   </div>

@@ -14,10 +14,10 @@ export const authApi = {
       body: JSON.stringify(credentials),
     }),
 
-  googleLogin: (credential: string) =>
+  googleLogin: (credential: string, mode: 'signin' | 'signup' = 'signin') =>
     apiRequest<{ token: string; user: User }>('/auth/google', {
       method: 'POST',
-      body: JSON.stringify({ credential }),
+      body: JSON.stringify({ credential, mode }),
     }),
 
   register: (payload: { name: string; email: string; password: string; confirmPassword?: string; monthlyIncome?: number }) =>

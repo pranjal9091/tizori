@@ -221,7 +221,7 @@ export async function demoLogin(req: Request, res: Response): Promise<void> {
 
 // Real Google OAuth Authentication Endpoint
 export async function googleAuth(req: Request, res: Response): Promise<void> {
-  const { credential } = req.body;
+  const { credential, mode = 'signin' } = req.body;
 
   if (!credential) {
     res.status(400).json({ success: false, message: 'Google credential (ID token) is required.' });
@@ -287,6 +287,16 @@ export async function googleAuth(req: Request, res: Response): Promise<void> {
     let user = await User.findOne({ $or: [{ email }, { googleId }] });
 
     if (!user) {
+      // If user attempted to sign in without having registered first
+      if (mode === 'signin') {
+        res.status(404).json({
+          success: false,
+          code: 'USER_NOT_FOUND',
+          message: 'No account found with this Google email. Please click "Create Account" first to register.',
+        });
+        return;
+      }
+
       // Create new Google-authenticated user
       user = await User.create({
         name,
@@ -298,6 +308,7 @@ export async function googleAuth(req: Request, res: Response): Promise<void> {
         currency: 'INR',
         tier: 'free',
       });
+      console.log(`👤 New user account created via Google Sign-Up: ${email}`);
     } else {
       // Update Google profile details if needed
       let modified = false;
