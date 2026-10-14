@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
@@ -23,7 +23,7 @@ const app = express();
 // Enable CORS for localhost, Vercel, and Render deployments
 app.use(
   cors({
-    origin: (origin, callback) => {
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
       // Allow server-to-server, curl, mobile, or same-origin requests
       if (!origin) return callback(null, true);
       const allowed = [
@@ -48,7 +48,7 @@ app.use(
   })
 );
 
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   if (req.originalUrl === '/api/payments/webhook') {
     next();
   } else {
@@ -58,7 +58,7 @@ app.use((req, res, next) => {
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Health Check Endpoint
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (req: Request, res: Response) => {
   res.json({
     status: 'ok',
     service: 'PocketPaisa (गुल्लक) API Server',
@@ -81,7 +81,7 @@ const clientDistPath = path.resolve(__dirname, '../../client/dist');
 if (fs.existsSync(clientDistPath)) {
   console.log(`📦 Serving compiled client frontend from ${clientDistPath}`);
   app.use(express.static(clientDistPath));
-  app.get('*', (req, res, next) => {
+  app.get('*', (req: Request, res: Response, next: NextFunction) => {
     if (req.originalUrl.startsWith('/api')) {
       return next();
     }
